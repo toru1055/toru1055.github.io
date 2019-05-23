@@ -1,4 +1,4 @@
-<div id='product-component-281ac35bece'></div>
+<div id='product-component-d28c8bd20e6'></div>
     <script type="text/javascript">
     /*<![CDATA[*/
 
@@ -24,19 +24,18 @@
 
       function ShopifyBuyInit() {
         var client = ShopifyBuy.buildClient({
-          domain: 'dev1-thotta.myshopify.com',
-          storefrontAccessToken: '89ec9037b9b3ebee5d5f0c492c831aee',
+          domain: 'test-and-d.myshopify.com',
+          storefrontAccessToken: '971490d71a17ce8e1050e191bb087668',
         });
 
         ShopifyBuy.UI.onReady(client).then(function (ui) {
           ui.createComponent('product', {
-            id: [1540414079051],
-            node: document.getElementById('product-component-281ac35bece'),
+            id: [828926165052],
+            node: document.getElementById('product-component-d28c8bd20e6'),
             moneyFormat: '%C2%A5%7B%7Bamount_no_decimals%7D%7D',
             options: {
   "product": {
     "variantId": "all",
-    "width": "240px",
     "contents": {
       "imgWithCarousel": false,
       "variantTitle": false,
@@ -47,13 +46,10 @@
     "styles": {
       "product": {
         "@media (min-width: 601px)": {
-          "max-width": "100%",
-          "margin-left": "0",
+          "max-width": "calc(25% - 20px)",
+          "margin-left": "20px",
           "margin-bottom": "50px"
         }
-      },
-      "compareAt": {
-        "font-size": "12px"
       }
     }
   },
