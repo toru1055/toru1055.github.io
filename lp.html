@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HottyLTR - 検索結果最適化API</title>
+    <meta name="description" content="機械学習で検索結果の並び順を最適化。CV数120%向上の実績。実証実験無料でスタート。">
+    
+    <!-- CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            margin-top: 70px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+        }
+
+        .hero-image {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .placeholder-image {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 40px;
+            margin: 20px auto;
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        /* Results Section */
+        .results {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .result-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 3px solid #667eea;
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .comparison-table {
+            overflow-x: auto;
+            margin-top: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+
+        .check {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 100px 0 60px;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">HottyLTR</div>
+                <nav>
+                    <ul>
+                        <li><a href="#features">特徴</a></li>
+                        <li><a href="#results">実績</a></li>
+                        <li><a href="#pricing">料金</a></li>
+                        <li><a href="#comparison">比較</a></li>
+                        <li><a href="#contact">お問い合わせ</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>検索結果を機械学習で最適化</h1>
+            <p>ユーザー行動を学習し、CV数120%向上を実現する検索結果最適化API</p>
+            <a href="#contact" class="cta-button">無料で実証実験を始める</a>
+            
+            <div class="hero-image">
+                <div class="placeholder-image" style="max-width: 800px;">
+                    【画像プレースホルダー】<br>
+                    推奨画像: ダッシュボードのモックアップ画像<br>
+                    - 検索結果ランキングの改善グラフ<br>
+                    - CV数向上の可視化<br>
+                    - モダンなUI/UXデザイン
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">HottyLTRの特徴</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🧠</div>
+                    <h3>機械学習による最適化</h3>
+                    <p>ユーザーの行動ログを分析し、検索結果の並び順を自動で最適化。継続的な学習でパフォーマンスを向上させます。</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔗</div>
+                    <h3>既存システムと連携</h3>
+                    <p>ElasticsearchやSolrなど、既存の検索エンジンとシームレスに連携。大規模なシステム改修は不要です。</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>プライバシー保護</h3>
+                    <p>個人情報は外部に送信せず、自社環境内で安全に処理。GDPRやプライバシー規制にも対応します。</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3>高速レスポンス</h3>
+                    <p>リアルタイムでの検索結果最適化を実現。ユーザー体験を損なうことなく、改善効果を提供します。</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3>詳細な分析機能</h3>
+                    <p>CTRインタラクション分析、A/Bテスト機能、バンディット最適化など、高度な分析機能を標準搭載。</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🚀</div>
+                    <h3>簡単導入</h3>
+                    <p>OpenSearchのLTRプラグインより簡単な導入プロセス。3ヶ月で本格運用を開始できます。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="results">
+        <div class="container">
+            <h2 class="section-title">導入実績</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">転職サイトでのA/Bテスト結果</p>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-number">120%</div>
+                    <div class="result-label">CV数向上</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-number">120%</div>
+                    <div class="result-label">クリック数向上</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-number">3ヶ月</div>
+                    <div class="result-label">導入期間</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-number">240時間</div>
+                    <div class="result-label">総稼働時間</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 3rem; text-align: center;">
+                <div class="placeholder-image" style="max-width: 600px;">
+                    【画像プレースホルダー】<br>
+                    推奨画像: 導入実績のグラフ・チャート<br>
+                    - A/Bテスト結果の比較グラフ<br>
+                    - CV数・クリック数の改善推移<br>
+                    - ROI効果の可視化
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">料金プラン</h2>
+            
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>実証実験プラン</h3>
+                    <div class="price">無料</div>
+                    <ul class="pricing-features">
+                        <li>3ヶ月間の無料トライアル</li>
+                        <li>基本的な機械学習機能</li>
+                        <li>導入支援・コンサルティング</li>
+                        <li>効果測定レポート</li>
+                        <li>メールサポート</li>
+                    </ul>
+                    <a href="#contact" class="cta-button">実証実験を始める</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <h3>本格導入プラン</h3>
+                    <div class="price">月額30万円〜</div>
+                    <ul class="pricing-features">
+                        <li>全機能利用可能</li>
+                        <li>高度な機械学習アルゴリズム</li>
+                        <li>24時間365日サポート</li>
+                        <li>専任コンサルタント</li>
+                        <li>カスタマイズ対応</li>
+                        <li>SLA保証</li>
+                    </ul>
+                    <a href="#contact" class="cta-button">詳細を問い合わせる</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="comparison">
+        <div class="container">
+            <h2 class="section-title">他サービスとの比較</h2>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>機能</th>
+                            <th>HottyLTR</th>
+                            <th>OpenSearch LTR</th>
+                            <th>従来の検索</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>柔軟な特徴量エンジニアリング</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>継続的学習</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>複数モデル連携</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>オンライン学習標準サポート</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>簡単導入</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="check">✓</td>
+                        </tr>
+                        <tr>
+                            <td>個人情報保護</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                        </tr>
+                        <tr>
+                            <td>導入コスト</td>
+                            <td class="check">低</td>
+                            <td class="cross">高</td>
+                            <td class="check">低</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">お問い合わせ</h2>
+            <p>まずは無料の実証実験からスタートしませんか？</p>
+            
+            <div class="contact-form">
+                <form action="https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse" method="post" target="_blank">
+                    <div class="form-group">
+                        <label for="company">会社名 *</label>
+                        <input type="text" id="company" name="entry.COMPANY_FIELD_ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">お名前 *</label>
+                        <input type="text" id="name" name="entry.NAME_FIELD_ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">メールアドレス *</label>
+                        <input type="email" id="email" name="entry.EMAIL_FIELD_ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">電話番号</label>
+                        <input type="tel" id="phone" name="entry.PHONE_FIELD_ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="interest">ご興味の内容 *</label>
+                        <select id="interest" name="entry.INTEREST_FIELD_ID" required style="width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; background: rgba(255,255,255,0.9);">
+                            <option value="">選択してください</option>
+                            <option value="trial">実証実験について</option>
+                            <option value="pricing">料金について</option>
+                            <option value="demo">デモ・資料請求</option>
+                            <option value="integration">既存システムとの連携</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">メッセージ</label>
+                        <textarea id="message" name="entry.MESSAGE_FIELD_ID" placeholder="ご質問やご要望がございましたらお気軽にお書きください"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="cta-button" style="width: 100%; margin-top: 1rem;">送信する</button>
+                </form>
+                
+                <p style="margin-top: 2rem; opacity: 0.8; font-size: 0.9rem;">
+                    ※ Googleフォームで送信されます。<br>
+                    ※ 送信後、担当者より1営業日以内にご連絡いたします。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 HottyLTR. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Form validation and submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = '#f44336';
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('必須項目をすべて入力してください。');
+                return false;
+            }
+            
+            // Show success message
+            setTimeout(() => {
+                alert('お問い合わせありがとうございます。担当者より1営業日以内にご連絡いたします。');
+            }, 100);
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+        });
+    </script>
+</body>
+</html> 
